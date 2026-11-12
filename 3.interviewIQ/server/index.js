@@ -28,7 +28,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/interview", interviewRouter);
 
-// Serve the built Vite application and API from one origin in production.
+// Serve the built Vite app and API from one origin in production.
 app.use(express.static(clientDistPath));
 app.use((req, res, next) => {
   if (req.method !== "GET" || req.path.startsWith("/api/")) return next();

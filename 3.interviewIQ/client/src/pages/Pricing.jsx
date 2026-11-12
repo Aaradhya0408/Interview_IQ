@@ -20,7 +20,7 @@ function Pricing() {
         </button>
         <div className='text-center w-full'>
           <h1 className='text-4xl font-bold text-gray-800'>Free Plan</h1>
-          <p className='text-gray-500 mt-3 text-lg'>Paid plans are temporarily unavailable while we set up the service.</p>
+          <p className='text-gray-500 mt-3 text-lg'>Paid plans are temporarily unavailable.</p>
         </div>
       </div>
 
