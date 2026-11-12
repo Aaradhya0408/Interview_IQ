@@ -11,15 +11,16 @@ import InterviewHistory from './pages/InterviewHistory'
 import Pricing from './pages/Pricing'
 import InterviewReport from './pages/InterviewReport'
 
-export const ServerUrl  = "http://localhost:8000"
+// Same-origin in production; local Vite development uses the Express server.
+export const ServerUrl = import.meta.env.VITE_SERVER_URL ?? (import.meta.env.PROD ? '' : 'http://localhost:6000')
 
 function App() {
-
   const dispatch = useDispatch()
-  useEffect(()=>{
+
+  useEffect(() => {
     const getUser = async () => {
       try {
-        const result = await axios.get(ServerUrl + "/api/user/current-user", {withCredentials:true})
+        const result = await axios.get(ServerUrl + "/api/user/current-user", { withCredentials: true })
         dispatch(setUserData(result.data))
       } catch (error) {
         console.log(error)
@@ -27,19 +28,16 @@ function App() {
       }
     }
     getUser()
+  }, [dispatch])
 
-  },[dispatch])
   return (
     <Routes>
-      <Route path='/' element={<Home/>}/>
-      <Route path='/auth' element={<Auth/>}/>
-      <Route path='/interview' element={<InterviewPage/>}/>
-      <Route path='/history' element={<InterviewHistory/>}/>
-      <Route path='/pricing' element={<Pricing/>}/>
-      <Route path='/report/:id' element={<InterviewReport/>}/>
-
-
-
+      <Route path='/' element={<Home />} />
+      <Route path='/auth' element={<Auth />} />
+      <Route path='/interview' element={<InterviewPage />} />
+      <Route path='/history' element={<InterviewHistory />} />
+      <Route path='/pricing' element={<Pricing />} />
+      <Route path='/report/:id' element={<InterviewReport />} />
     </Routes>
   )
 }

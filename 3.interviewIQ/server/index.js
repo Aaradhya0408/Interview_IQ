@@ -1,30 +1,56 @@
-import express from "express"
-import dotenv from "dotenv"
-import connectDb from "./config/connectDb.js"
-import cookieParser from "cookie-parser"
-dotenv.config()
-import cors from "cors"
-import authRouter from "./routes/auth.route.js"
-import userRouter from "./routes/user.route.js"
-import interviewRouter from "./routes/interview.route.js"
-import paymentRouter from "./routes/payment.route.js"
+import express from "express";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import connectDb from "./config/connectDb.js";
+import authRouter from "./routes/auth.route.js";
+import userRouter from "./routes/user.route.js";
+import interviewRouter from "./routes/interview.route.js";
+import paymentRouter from "./routes/payment.route.js";
 
-const app = express()
+dotenv.config();
+
+const app = express();
+const port = process.env.PORT || 6000;
+const isProduction = process.env.NODE_ENV === "production";
+const clientOrigins = (process.env.CLIENT_ORIGIN || "http://localhost:5173")
+  .split(",")
+  .map((origin) => origin.trim());
+const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
+const clientDistPath = path.resolve(currentDirectory, "../../client/dist");
+
 app.use(cors({
-    origin:"http://localhost:5173",
-    credentials:true
-}))
+  origin: clientOrigins,
+  credentials: true,
+}));
+app.use(express.json());
+app.use(cookieParser());
 
-app.use(express.json())
-app.use(cookieParser())
+app.get("/health", (_req, res) => res.status(200).json({ status: "ok" }));
+app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
+app.use("/api/interview", interviewRouter);
+app.use("/api/payment", paymentRouter);
 
-app.use("/api/auth" , authRouter)
-app.use("/api/user", userRouter)
-app.use("/api/interview" , interviewRouter)
-app.use("/api/payment" , paymentRouter)
+// Render serves the built Vite app and API from one origin.
+app.use(express.static(clientDistPath));
+app.use((req, res, next) => {
+  if (req.method !== "GET" || req.path.startsWith("/api/")) return next();
+  res.sendFile(path.join(clientDistPath, "index.html"), (error) => {
+    if (error) next(error);
+  });
+});
 
-const PORT = process.env.PORT || 6000
-app.listen(PORT , ()=>{
-    console.log(`Server running on port ${PORT}`)
-    connectDb()
-})
+const start = async () => {
+  await connectDb();
+  app.listen(port, () => {
+    console.log(`Server running on port ${port} (${isProduction ? "production" : "development"})`);
+  });
+};
+
+start().catch((error) => {
+  console.error("Server startup failed:", error);
+  process.exit(1);
+});
