@@ -3,7 +3,7 @@ services:
     name: interview-iq
     runtime: node
     rootDir: 3.interviewIQ
-    buildCommand: npm ci --prefix client && npm run build --prefix client && npm ci --prefix server
+    buildCommand: npm ci --prefix client && npm run build --prefix client && npm install --prefix server
     startCommand: npm start --prefix server
     healthCheckPath: /health
     envVars:
@@ -15,11 +15,5 @@ services:
         sync: false
       - key: OPENROUTER_API_KEY
         sync: false
-      - key: RAZORPAY_KEY_ID
-        sync: false
-      - key: RAZORPAY_KEY_SECRET
-        sync: false
       - key: VITE_FIREBASE_APIKEY
         sync: false
-      - key: CLIENT_ORIGIN
-        value: http://localhost:5173

@@ -1,23 +1,22 @@
 # InterviewIQ
 
-InterviewIQ is a Vite/React frontend with an Express/MongoDB API. The Render blueprint at the repository root builds the frontend and serves it from the API service, so the production app uses one origin.
+InterviewIQ is a Vite/React frontend with an Express/MongoDB API. The Render blueprint at the repository root builds the frontend and serves it from the API service, so production uses one origin. Payment integration is currently disabled; the Pricing page offers the free plan only.
 
 ## Deploy on Render
 
-1. Push this repository to GitHub and create a new **Blueprint** in Render using this repository. Render will detect `render.yaml` and create the `interview-iq` web service.
+1. Push this repository to GitHub and create a **Blueprint** in Render from this repository. Render will detect `render.yaml` and create the `interview-iq` web service.
 2. In the service's **Environment** settings, provide the secrets listed below. Render will then build and deploy the app. The health check is `/health`.
-3. In Firebase Console, enable Google sign-in and add the deployed Render hostname to the authorized domains. Set the Firebase API key in Render as `VITE_FIREBASE_APIKEY` (this is included in the frontend build).
-4. Add the deployed hostname to Razorpay's allowed checkout domains if required by your Razorpay account.
+3. In Firebase Console, enable Google sign-in and add the deployed Render hostname to the authorized domains. Set the Firebase API key in Render as `VITE_FIREBASE_APIKEY` before building/redeploying.
+4. In MongoDB Atlas, allow the Render service to connect according to your network-access policy.
 
 ### Required environment variables
 
-- `MONGODB_URL` — MongoDB Atlas connection string. Allow Render's outbound IPs in Atlas, or configure the database network access according to your security requirements.
+- `MONGODB_URL` — MongoDB Atlas connection string.
 - `JWT_SECRET` — long, random signing secret.
 - `OPENROUTER_API_KEY` — OpenRouter API key for interview generation and evaluation.
-- `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` — Razorpay API credentials.
-- `VITE_FIREBASE_APIKEY` — Firebase project's web API key. Configure it before building/redeploying.
+- `VITE_FIREBASE_APIKEY` — Firebase project's web API key; it is included in the frontend build.
 
-`NODE_ENV` is set to `production` by the blueprint. `CLIENT_ORIGIN` is set for local development and is not needed for the same-origin Render deployment; change it if hosting the frontend separately.
+`NODE_ENV` is set to `production` by the blueprint. Payment/Razorpay variables are not required because payment functionality is disabled.
 
 ## Local development
 

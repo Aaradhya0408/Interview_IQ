@@ -8,23 +8,18 @@ import connectDb from "./config/connectDb.js";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
 import interviewRouter from "./routes/interview.route.js";
-import paymentRouter from "./routes/payment.route.js";
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 6000;
-const isProduction = process.env.NODE_ENV === "production";
 const clientOrigins = (process.env.CLIENT_ORIGIN || "http://localhost:5173")
   .split(",")
   .map((origin) => origin.trim());
 const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
 const clientDistPath = path.resolve(currentDirectory, "../../client/dist");
 
-app.use(cors({
-  origin: clientOrigins,
-  credentials: true,
-}));
+app.use(cors({ origin: clientOrigins, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -32,9 +27,8 @@ app.get("/health", (_req, res) => res.status(200).json({ status: "ok" }));
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/interview", interviewRouter);
-app.use("/api/payment", paymentRouter);
 
-// Render serves the built Vite app and API from one origin.
+// Serve the built Vite application and API from one origin in production.
 app.use(express.static(clientDistPath));
 app.use((req, res, next) => {
   if (req.method !== "GET" || req.path.startsWith("/api/")) return next();
@@ -45,9 +39,7 @@ app.use((req, res, next) => {
 
 const start = async () => {
   await connectDb();
-  app.listen(port, () => {
-    console.log(`Server running on port ${port} (${isProduction ? "production" : "development"})`);
-  });
+  app.listen(port, () => console.log(`Server running on port ${port}`));
 };
 
 start().catch((error) => {
